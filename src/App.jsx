@@ -11,6 +11,7 @@ import { SearchPage } from "@pages/SearchPage";
 import { AccountPage } from "@pages/AccountPage";
 import { SqueezingPage } from "@pages/SqueezingPage";
 import { EezingPage } from "@pages/EezingPage";
+import { RecoilRoot } from "recoil";
 
 const router = createMemoryRouter([
   {
@@ -26,7 +27,7 @@ const router = createMemoryRouter([
     ),
   },
   {
-    path : "/squeeze/squeezing",
+    path: "/squeeze/squeezing",
     element: (
       <Layout>
         <SqueezingPage />
@@ -43,11 +44,11 @@ const router = createMemoryRouter([
   },
   {
     path: "/eezy/eezying",
-    element : (
+    element: (
       <Layout>
         <EezingPage />
       </Layout>
-    )
+    ),
   },
   {
     path: "/user",
@@ -78,7 +79,9 @@ const router = createMemoryRouter([
 function App() {
   return (
     <>
-      <RouterProvider router={router} />
+      <RecoilRoot>
+        <RouterProvider router={router} />
+      </RecoilRoot>
     </>
   );
 }
