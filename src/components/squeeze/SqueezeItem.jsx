@@ -2,15 +2,36 @@ import styled from "styled-components";
 import Icon from "@assets/icon/icon-squeeze--small.svg?react";
 import FolderBack from "@assets/squeeze-folder--back.svg?react";
 import FolderFront from "@assets/squeeze-folder--front.svg?react";
+import { useEffect, useState } from "react";
 
 export const SqueezeItem = ({
   width = 197,
   height = 194,
   color = "#F9CF35",
-  title = "Title",
-  tabs = 0,
-  images = [],
+  tabs = [],
+  image = "",
 }) => {
+  const [title, setTitle] = useState("");
+  useEffect(() => {
+    const fetchTitle = async () => {
+      await new Promise((resolve, reject) => {
+        chrome.runtime.sendMessage(
+          {
+            action: "squeezing",
+            payload: {
+              tabs: tabs,
+            },
+          },
+          (response) => {
+            if (response) resolve(response);
+          }
+        );
+      }).then((res) => {
+        //
+      });
+    };
+    fetchTitle();
+  }, [tabs]);
   return (
     <Container width={width} height={height}>
       <FolderBack width={width} height={height} fill={color} />
@@ -27,7 +48,7 @@ export const SqueezeItem = ({
           {title}
         </FolderSpan>
         <FolderSpan size={width / 12} color="rgba(0, 0, 0, 0.36)">
-          {tabs} tabs
+          {tabs.length} tabs
         </FolderSpan>
       </div>
     </Container>

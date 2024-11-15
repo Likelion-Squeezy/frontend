@@ -4,10 +4,22 @@ import { SqueezeItem } from "../components/squeeze/SqueezeItem";
 import { useEffect, useState } from "react";
 
 export const SqueezingPage = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadingCount, setLoadingCount] = useState(1);
   const [tabsData, setTabsData] = useState({
     tabs : [],
-    capturedImage : "",
+    capturedImage
   });
+
+  useEffect(() => {
+    let timer;
+    if (isLoading) {
+      timer = setTimeout(() => {
+        setLoadingCount((prevCount) => (prevCount < 3 ? prevCount + 1 : 1));
+      }, 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [loadingCount, isLoading]);
 
   useEffect(() => {
     const getTabsData = async () => {
@@ -28,9 +40,12 @@ export const SqueezingPage = () => {
         <ProfileCircle>
           <Logo width={20} height={20} />
         </ProfileCircle>
-        <span>squeezing...</span>
+        {isLoading ? `eezing${".".repeat(loadingCount)}` : "Complete!"}
       </Header>
-      <SqueezeItem />
+      <SqueezeItem
+        tabs={tabsData.tabs}
+        image={tabsData.capturedImage}
+      />
     </Container>
   );
 };
