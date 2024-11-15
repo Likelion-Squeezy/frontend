@@ -5,6 +5,7 @@ import Logo from "../../assets/icon/icon-logo--text.svg?react";
 import Menu from "../../assets/icon/icon-menu.svg?react";
 // components
 import { Nav } from "./Nav";
+import { NavCells } from "./NavCells";
 
 export const Layout = ({ children }) => {
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -33,7 +34,7 @@ export const Layout = ({ children }) => {
           <div onClick={() => setIsNavOpen((prev) => !prev)}>
             <Menu />
           </div>
-          {isNavOpen && <Nav setNavOpen={setIsNavOpen} />}
+          {isNavOpen && <Nav><NavCells setNavOpen={setIsNavOpen}/></Nav>}
         </div>
       </Header>
       <main>{children}</main>
@@ -44,6 +45,9 @@ export const Layout = ({ children }) => {
 const Container = styled.div`
   min-width: 360px;
   width: 100%;
+  & > main {
+    z-index: 0;
+  }
 `;
 const Header = styled.header`
   display: flex;

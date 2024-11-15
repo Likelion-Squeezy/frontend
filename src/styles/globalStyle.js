@@ -8,6 +8,12 @@ const GlobalStyle = createGlobalStyle`
         font-family: 'Satoshi', sans-serif;
         box-sizing: border-box;
     }
+
+    html, body {
+        height: 100%;
+        background-color: #f5f5f5;
+    }
+    
     #slide-root {
         display: flex;
         flex-direction: column;
@@ -16,6 +22,6 @@ const GlobalStyle = createGlobalStyle`
 
         align-items: center;
     }
-`
+`;
 
 export default GlobalStyle;

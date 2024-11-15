@@ -1,13 +1,13 @@
 const typography = {
   button : {
-    fontFamily : 'Futura Std',
+    fontFamily : 'Futura PT',
     fontSize : "14px",
     letterSpacing : "-6%",
   },
   title : {
     fontFamily : "Satoshi",
     fontSize : "20px",
-    fontWeight : "bold",
+    fontWeight : 500,
     letterSpacing : "-6%",
   },
   h1 : {
@@ -31,7 +31,7 @@ const typography = {
   description : {
     fontFamily : "Satoshi",
     fontSize : "10px",
-    fontWeight : "bold",
+    fontWeight : 500,
     letterSpacing : "-6%",
   },
   subDescription : {
