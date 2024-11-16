@@ -94,6 +94,29 @@ function extractHtml() {
 
 // 팝업의 버튼이 눌렸을 때의 preview.jsx/onSqueeze()의 메시지를 수신하기 위한 이벤트 리스너 등록
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "profile") {
+    (async function () {
+      try {
+        await fetch("http://13.124.143.64/api/users/profile/", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "751aae735c54cfed0965670c717acda12e5a2711",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            sendResponse({ success: true, response: data });
+          })
+          .catch((error) => {
+            console.error("Error sending message:", error);
+            sendResponse({ success: false, error: error.message });
+          });
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
+    })();
+  }
   if (request.action === "preview") {
     (async function () {
       try {
@@ -263,19 +286,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 function previewTab(callback) {
   const previews = {
-    tabs : [],
+    tabs: [],
     capturedImage: "",
   };
   chrome.tabs.query({}, (tabs) => {
     tabs.forEach((tab, index) => {
       if (index > 0 && index != tab.index) return; // 현재 탭만 허용
       previews.tabs.push({
-        title : tab.title,
-        url : tab.url,
-        favicon : tab.favIconUrl,
-      })
+        title: tab.title,
+        url: tab.url,
+        favicon: tab.favIconUrl,
+      });
     });
-    
+
     chrome.tabs.captureVisibleTab(null, { format: "png" }, (dataUrl) => {
       if (dataUrl) {
         previews.capturedImage = dataUrl;
