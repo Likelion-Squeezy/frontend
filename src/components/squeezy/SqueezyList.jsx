@@ -1,46 +1,79 @@
 import styled from "styled-components";
-import Add from "@assets/icon/icon-add--floatbtn.svg?react";
+import { useState } from "react";
+import { SqueezyListItems } from "./SqueezyListItems";
 
-export const SqueezyList = () => {
+const filteredData = ({ history = [], viewType }) => {
+  if (viewType === "all") return history;
+  else if (viewType === "squeezy")
+    return history.filter((item) => item.type === "squeezy");
+  else if (viewType === "eezy")
+    return history.filter((item) => item.type === "eezy");
+  else return [];
+};
+
+export const SqueezyList = ({ history = [] }) => {
+  const [userViewType, setUserViewType] = useState("all");
+  const [index, setIndex] = useState(1);
+  const filteredHistory = filteredData({
+    history: history,
+    viewType: userViewType,
+  });
+
+  const hanldeClickType = (type) => {
+    setUserViewType(type);
+    setIndex(1);
+  };
+
   return (
     <Container>
       <ViewTypeButtonWrap>
         <ViewTypeButton
-          style={{ backgroundColor: "#3C3C3C", color: "#ffffff" }}
+          style={
+            userViewType === "all"
+              ? { color: "#ffffff", backgroundColor: "#3c3c3c" }
+              : {}
+          }
+          onClick={() => {
+            hanldeClickType("all");
+          }}
         >
           All
         </ViewTypeButton>
-        <ViewTypeButton>eezy</ViewTypeButton>
-        <ViewTypeButton>squeeze</ViewTypeButton>
+        <ViewTypeButton
+          style={
+            userViewType === "eezy"
+              ? { color: "#ffffff", backgroundColor: "#3c3c3c" }
+              : {}
+          }
+          onClick={() => {
+            hanldeClickType("eezy");
+          }}
+        >
+          eezy
+        </ViewTypeButton>
+        <ViewTypeButton
+          style={
+            userViewType === "squeezy"
+              ? { color: "#ffffff", backgroundColor: "#3c3c3c" }
+              : {}
+          }
+          onClick={() => {
+            hanldeClickType("squeezy");
+          }}
+        >
+          squeeze
+        </ViewTypeButton>
       </ViewTypeButtonWrap>
-      <Content>
-        <FloatingButton>
-          <Add width={18} height={18} />
-        </FloatingButton>
-      </Content>
-      <PageIndex>
-        {[1, 2, 3, 4, 5].map((num) => {
-          return (
-            <PageIndexButton style={{ color: "#000000" }}>
-              {num}
-            </PageIndexButton>
-          );
-        })}
-      </PageIndex>
-      <Footer>
-        <span>squeeeeezy</span>
-      </Footer>
+      <SqueezyListItems
+        items={filteredHistory}
+        index={index}
+        setIndex={setIndex}
+      />
     </Container>
   );
 };
 
 const Container = styled.div``;
-
-const Content = styled.div`
-  margin-top: 9px;
-  height: 600px;
-  position: relative;
-`;
 
 const ViewTypeButtonWrap = styled.div`
   display: flex;
@@ -62,48 +95,5 @@ const ViewTypeButton = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-`;
-
-const PageIndex = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-`;
-
-const PageIndexButton = styled.span`
-  border: none;
-  background-color: transparent;
-
-  ${(props) => props.theme.typography.h2};
-  color: rgba(0, 0, 0, 0.5);
-`;
-
-const FloatingButton = styled.button`
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  margin-right: 10px;
-
-  width: 45px;
-  height: 45px;
-  background-color: #ffffff;
-  border: 1px solid #e4e4e4;
-  border-radius: 50%;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const Footer = styled.footer`
-  display: flex;
-  justify-content: center;
-  & > span {
-    ${(props) => props.theme.typography.button};
-    font-weight: bold;
-    letter-spacing: -4%;
-    color: rgba(0, 0, 0, 0.5);
-  }
-
-  margin-top: 10px;
+  cursor: pointer;
 `;
