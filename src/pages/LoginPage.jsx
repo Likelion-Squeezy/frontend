@@ -11,6 +11,8 @@ export const LoginPage = () => {
         navigate("/eezy");
       } else if (result.type === "squeeze") {
         navigate("/squeeze");
+      } else if(result.type === "history") {
+        navigate("/user");
       }
       chrome.storage.local.remove(["type"]);
     });

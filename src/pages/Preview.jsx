@@ -32,7 +32,7 @@ function Preview() {
           <span>summarize this page</span>
         </Button>
       </div>
-      <History>
+      <History onClick={() => handleOnClick("history")}>
         <span>Your History</span>
         <Arrow width={7} height={12} />
       </History>
