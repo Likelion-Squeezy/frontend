@@ -158,7 +158,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
-                  Authorization: "751aae735c54cfed0965670c717acda12e5a2711",
+                  Authorization:
+                    "Token 57fdf5d9b6c6c2e959f6dee73e0db162d1bc065c",
                 },
                 body: JSON.stringify({
                   title: tabs[0].title,
@@ -188,36 +189,39 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true; // 비동기 응답을 허용
   } else if (request.action === "squeeze") {
     const allTabs = [];
-    chrome.tabs.query({}, (tabs) => {
+    chrome.tabs.query({ currentWindow: true }, (tabs) => {
       tabs.forEach((tab) => {
         allTabs.push({
           title: tab.title,
           url: tab.url,
+          favicon: tab.favIconUrl, // Add favicon URL
         });
       });
-    });
-    if (allTabs) {
-      fetch("http://13.124.143.64/api/squeeze/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "751aae735c54cfed0965670c717acda12e5a2711",
-        },
-        body: JSON.stringify({
-          tabs: allTabs,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          sendResponse({ response: data });
+      if (allTabs) {
+        fetch("http://13.124.143.64/api/squeeze/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Token 57fdf5d9b6c6c2e959f6dee73e0db162d1bc065c",
+          },
+          body: JSON.stringify({
+            tabs: allTabs,
+            image: request.image,
+          }),
         })
-        .catch((error) => {
-          console.error("Error sending data to API:", error);
-          sendResponse({ response: "error" });
-        });
-    } else {
-      console.log("탭이 없어요!");
-    }
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
+            sendResponse({ response: data });
+          })
+          .catch((error) => {
+            console.error("Error sending data to API:", error);
+            sendResponse({ response: "error" });
+          });
+      } else {
+        console.log("탭이 없어요!");
+      }
+    });
   }
   return true;
 });
@@ -295,7 +299,7 @@ function previewTab(callback) {
       previews.tabs.push({
         title: tab.title,
         url: tab.url,
-        //favicon: tab.favIconUrl,
+        favicon: tab.favIconUrl,
       });
     });
 
