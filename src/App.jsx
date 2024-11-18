@@ -11,6 +11,7 @@ import { SearchPage } from "@pages/SearchPage";
 import { AccountPage } from "@pages/AccountPage";
 import { SqueezingPage } from "@pages/SqueezingPage";
 import { EezingPage } from "@pages/EezingPage";
+import { SqueezeDetailPage } from "./pages/SqueezeDetailPage";
 
 const router = createMemoryRouter([
   {
@@ -30,6 +31,14 @@ const router = createMemoryRouter([
     element: (
       <Layout>
         <SqueezingPage />
+      </Layout>
+    ),
+  },
+  {
+    path : "/squeeze/detail/:id",
+    element: (
+      <Layout>
+        <SqueezeDetailPage />
       </Layout>
     ),
   },

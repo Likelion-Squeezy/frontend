@@ -94,6 +94,30 @@ function extractHtml() {
 
 // 팝업의 버튼이 눌렸을 때의 preview.jsx/onSqueeze()의 메시지를 수신하기 위한 이벤트 리스너 등록
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "getSqueeze") {
+    (async function () {
+      try {
+        await fetch(
+          `http://13.124.143.64/api/squeeze/${request.payload.id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Token 57fdf5d9b6c6c2e959f6dee73e0db162d1bc065c",
+            },
+          }
+        ).then((response) => response.json())
+        .then((data) => {
+          sendResponse({ success: true, data: data });
+        })
+        .catch((error) => {
+          sendResponse({ success: false, error: error.message });
+        });
+      } catch (error) {
+        sendResponse({ success: false, error: error.message });
+      }
+    })();
+  }
   if (request.action === "getEezy") {
     (async function () {
       try {
