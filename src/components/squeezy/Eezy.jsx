@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import EezyIcon from "@assets/icon/icon-eezy--small.svg?react";
+import { useNavigate } from "react-router-dom";
 
 export const Eezy = ({ id }) => {
+  const navigate = useNavigate();
   const [eezy, setEezy] = useState({
     title: "",
     content: "",
@@ -29,7 +31,7 @@ export const Eezy = ({ id }) => {
       fetchEezy();
     }, []);
   return (
-    <Container>
+    <Container onClick={() => navigate(`/eezy/detail/${eezy.id}`)}>
       <Contents>
         <SpanTitle>{eezy.title}</SpanTitle>
         <SpanSubTitle>{eezy.content.split("\n\n")[0]}</SpanSubTitle>
