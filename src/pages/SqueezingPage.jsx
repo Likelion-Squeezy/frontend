@@ -4,20 +4,29 @@ import { SqueezeItem } from "../components/squeeze/SqueezeItem";
 import { useEffect, useState } from "react";
 
 export const SqueezingPage = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadingCount, setLoadingCount] = useState(1);
   const [tabsData, setTabsData] = useState({
     tabs: [],
     capturedImage: "",
   });
 
   useEffect(() => {
+    let timer;
+    if (isLoading) {
+      timer = setTimeout(() => {
+        setLoadingCount((prevCount) => (prevCount < 3 ? prevCount + 1 : 1));
+      }, 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [loadingCount, isLoading]);
+
+  useEffect(() => {
     const getTabsData = async () => {
       await new Promise((resolve, reject) => {
-        chrome.runtime.sendMessage(
-          { action: "squeeze", image: null },
-          (response) => {
-            if (response) resolve(response);
-          }
-        );
+        chrome.runtime.sendMessage({ action: "preview" }, (response) => {
+          if (response) resolve(response);
+        });
       }).then((res) => {
         setTabsData(res);
       });
@@ -31,9 +40,15 @@ export const SqueezingPage = () => {
         <ProfileCircle>
           <Logo width={20} height={20} />
         </ProfileCircle>
-        <span>squeezing...</span>
+        {isLoading ? `eezing${".".repeat(loadingCount)}` : "Complete!"}
       </Header>
-      <SqueezeItem />
+      <SqueezeItem
+        tabs={tabsData.tabs}
+        image={tabsData.capturedImage}
+        setIsLoading={setIsLoading}
+        isLoading={isLoading}
+      />
+   
     </Container>
   );
 };
@@ -41,7 +56,7 @@ export const SqueezingPage = () => {
 const Container = styled.div`
   padding: 9px 14px;
 
-  margin-top: 216px;
+  margin-top: 180px;
 
   display: flex;
   flex-direction: column;
