@@ -24,12 +24,9 @@ export const SqueezingPage = () => {
   useEffect(() => {
     const getTabsData = async () => {
       await new Promise((resolve, reject) => {
-        chrome.runtime.sendMessage(
-          { action: "squeeze", image: null },
-          (response) => {
-            if (response) resolve(response);
-          }
-        );
+        chrome.runtime.sendMessage({ action: "preview" }, (response) => {
+          if (response) resolve(response);
+        });
       }).then((res) => {
         setTabsData(res);
       });
@@ -48,7 +45,10 @@ export const SqueezingPage = () => {
       <SqueezeItem
         tabs={tabsData.tabs}
         image={tabsData.capturedImage}
+        setIsLoading={setIsLoading}
+        isLoading={isLoading}
       />
+   
     </Container>
   );
 };
@@ -56,7 +56,7 @@ export const SqueezingPage = () => {
 const Container = styled.div`
   padding: 9px 14px;
 
-  margin-top: 216px;
+  margin-top: 180px;
 
   display: flex;
   flex-direction: column;

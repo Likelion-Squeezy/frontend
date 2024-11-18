@@ -97,13 +97,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "squeezing") {
     (async function () {
       try {
-        await fetch("http://13.124.143.64/api/squeeze", {
+        await fetch("http://13.124.143.64/api/squeeze/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: "751aae735c54cfed0965670c717acda12e5a2711",
+            Authorization: "Token 57fdf5d9b6c6c2e959f6dee73e0db162d1bc065c",
           },
-          body: JSON.stringify({ tabs: request.payload.tabs }),
+          body: JSON.stringify({ tabs: request.payload.tabs, image : request.payload.image }),
         })
           .then((response) => response.json())
           .then((data) => {

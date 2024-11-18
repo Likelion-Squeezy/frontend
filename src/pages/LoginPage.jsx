@@ -19,6 +19,7 @@ export const LoginPage = () => {
   return (
     <Container>
       <h1>Login Page</h1>
+      <button onClick={() => navigate("/squeeze")}>preview</button>
     </Container>
   );
 };
