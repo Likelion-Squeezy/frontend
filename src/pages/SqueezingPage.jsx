@@ -5,16 +5,19 @@ import { useEffect, useState } from "react";
 
 export const SqueezingPage = () => {
   const [tabsData, setTabsData] = useState({
-    tabs : [],
-    capturedImage : "",
+    tabs: [],
+    capturedImage: "",
   });
 
   useEffect(() => {
     const getTabsData = async () => {
       await new Promise((resolve, reject) => {
-        chrome.runtime.sendMessage({ action: "preview" }, (response) => {
-          if (response) resolve(response);
-        });
+        chrome.runtime.sendMessage(
+          { action: "squeeze", image: null },
+          (response) => {
+            if (response) resolve(response);
+          }
+        );
       }).then((res) => {
         setTabsData(res);
       });
