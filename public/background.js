@@ -1,8 +1,3 @@
-// 크롬 익스텐션이 설치 되었을 때 실행되는 부분
-chrome.runtime.onInstalled.addListener(() => {
-  // 크롬 익스텐션 설치 시, 소개 페이지 탭 생성
-});
-
 // 팝업 버튼 클릭 시 새로운 창을 열어 landing.html과 ChatGPT 탭을 띄움
 // 활성화된 탭의 정보를 바탕으로 사이드 패널을 열고 관리함
 
@@ -32,8 +27,6 @@ function setActiveTabAndWindow(callback) {
 function openSidePanel() {
   chrome.sidePanel.setOptions({ enabled: true, tabId: currentTabId });
   chrome.sidePanel.open({ windowId: currentWindowId });
-  console.log("현재 활성화된 탭 ID:", currentTabId);
-  console.log("현재 활성화된 윈도우 ID:", currentWindowId);
 }
 
 // 새로운 ChatGPT 및 landing.html 윈도우를 생성하는 함수
@@ -97,50 +90,48 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "getSqueeze") {
     (async function () {
       try {
-        await fetch(
-          `http://13.124.143.64/api/squeeze/${request.payload.id}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Token 57fdf5d9b6c6c2e959f6dee73e0db162d1bc065c",
-            },
-          }
-        ).then((response) => response.json())
-        .then((data) => {
-          sendResponse({ success: true, data: data });
+        await fetch(`http://13.124.143.64/api/squeeze/${request.payload.id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Token 57fdf5d9b6c6c2e959f6dee73e0db162d1bc065c",
+          },
         })
-        .catch((error) => {
-          sendResponse({ success: false, error: error.message });
-        });
+          .then((response) => response.json())
+          .then((data) => {
+            sendResponse({ success: true, data: data });
+          })
+          .catch((error) => {
+            sendResponse({ success: false, error: error.message });
+          });
       } catch (error) {
         sendResponse({ success: false, error: error.message });
       }
     })();
+    return true;
   }
   if (request.action === "getEezy") {
     (async function () {
       try {
-        await fetch(
-          `http://13.124.143.64/api/eezy/${request.payload.id}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Token 57fdf5d9b6c6c2e959f6dee73e0db162d1bc065c",
-            },
-          }
-        ).then((response) => response.json())
-        .then((data) => {
-          sendResponse({ success: true, data: data });
+        await fetch(`http://13.124.143.64/api/eezy/${request.payload.id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Token 57fdf5d9b6c6c2e959f6dee73e0db162d1bc065c",
+          },
         })
-        .catch((error) => {
-          sendResponse({ success: false, error: error.message });
-        });
+          .then((response) => response.json())
+          .then((data) => {
+            sendResponse({ success: true, data: data });
+          })
+          .catch((error) => {
+            sendResponse({ success: false, error: error.message });
+          });
       } catch (error) {
         sendResponse({ success: false, error: error.message });
       }
     })();
+    return true;
   }
   if (request.action === "profile") {
     (async function () {
@@ -163,6 +154,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         sendResponse({ success: false, error: e.message });
       }
     })();
+    return true;
   }
   if (request.action === "squeezing") {
     (async function () {
@@ -189,6 +181,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         sendResponse({ success: false, error: error.message });
       }
     })();
+
+    return true;
   }
   if (request.action === "preview") {
     (async function () {
@@ -208,8 +202,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       if (request.type) {
         chrome.storage.local.set({ type: request.type });
       }
-      openSidePanel(); // 사이드 패널 열기
-      sendResponse({ success: true }); // 성공적으로 사이드 패널을 열었음을 응답
+      currentTab = request.tab;
+      chrome.sidePanel.open({ tabId: currentTab.id }); // 사이드바 열기
+      sendResponse({ success: true });
+      return true; // 성공적으로 사이드 패널을 열었음을 응답
     } catch (error) {
       console.error("Error in open_sidepanel:", error);
       sendResponse({ success: false, error: error.message });
@@ -260,81 +256,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       }
     });
     return true; // 비동기 응답을 허용
-  } else if (request.action === "squeeze") {
-    const allTabs = [];
-    chrome.tabs.query({ currentWindow: true }, (tabs) => {
-      tabs.forEach((tab) => {
-        allTabs.push({
-          title: tab.title,
-          url: tab.url,
-          favicon: tab.favIconUrl, // Add favicon URL
-        });
-      });
-      if (allTabs) {
-        fetch("http://13.124.143.64/api/squeeze/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Token 57fdf5d9b6c6c2e959f6dee73e0db162d1bc065c",
-          },
-          body: JSON.stringify({
-            tabs: allTabs,
-            image: request.image,
-          }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            console.log(data);
-            sendResponse({ response: data });
-          })
-          .catch((error) => {
-            console.error("Error sending data to API:", error);
-            sendResponse({ response: "error" });
-          });
-      } else {
-        console.log("탭이 없어요!");
-      }
-    });
   }
   return true;
 });
-
-// 만약 열어놨던 chat gpt 탭이나 landing.html 탭이 닫히면 사이드 패널도 닫히도록 함
-
-// 윈도우가 ���힐 때 동작을 감지하는 리스너 등록
-/*chrome.windows.onRemoved.addListener((windowId) => {
-  // 닫힌 윈도우가 homeAndGptWindow 인지 확인
-  if (homeAndGptWindow && homeAndGptWindow.id === windowId) {
-    homeAndGptWindow = null; // homeAndGptWindow 객체 초기화 (null로 설정)
-    gptTab = null; // gptTab 객체 초기화 (null로 설정)
-
-    // 사이드 패널 비활성화
-    chrome.sidePanel.setOptions({ enabled: false, tabId: currentTabId });
-    console.log("Side panel closed because homepage and GPT window closed."); // 사이드 패널이 닫혔음을 로그에 출력
-  }
-});*/
-
-// 탭이 닫힐 때 동작을 감지하는 리스너 등록
-/*chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
-  // 닫힌 탭이 landingTab 또는 gptTab 인지 확인
-  if (tabId === landingTabId || tabId === gptTabId) {
-    // 해당 탭이 닫히면 사이드 패널 비활성화
-    chrome.sidePanel.setOptions({ enabled: false, tabId: currentTabId });
-    console.log("Side panel closed because one of the tabs was closed."); // 탭이 닫혀서 사이드 패널이 닫혔음을 로그에 출력
-
-    // 닫힌 탭이 gptTab 인지 확인
-    if (tabId === gptTabId) {
-      console.log("gpt tab closed."); // gpt 탭이 닫혔음을 로그에 출력
-      gptTab = null; // gptTab 객체 초기화
-      gptTabId = null; // gptTabId 초기화
-    }
-
-    // 닫힌 탭이 landingTab 인지 확인
-    if (tabId === landingTabId) {
-      landingTabId = null; // landingTabId 초기화
-    }
-  }
-});*/
 
 // 현재 탭 상황에서 변화가 생기면 바로 반영해서 TabList 업데이트
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
@@ -347,18 +271,6 @@ chrome.tabs.onCreated.addListener(() => {
 
 chrome.tabs.onRemoved.addListener(() => {
   chrome.runtime.sendMessage({ action: "update" });
-});
-
-// 웹 페이지에서 필요한 html 태그만 추출하는 함수
-
-// 익스텐션 실행 중에 들어오�� 모든 요청을 처리
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  // 웹 페이지 요약 요청 처리
-  if (request.action == "open_sidepanel") {
-    currentTab = request.tab;
-    chrome.sidePanel.open({ tabId: currentTab.id }); // 사이드바 열기
-    return true;
-  }
 });
 
 function previewTab(callback) {

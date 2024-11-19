@@ -9,8 +9,7 @@
     "contextMenus",
     "tabs",
     "scripting",
-    "storage",
-    "http://localhost:8000/*"
+    "storage"
   ],
   "host_permissions": ["<all_urls>"],
   "background": {
