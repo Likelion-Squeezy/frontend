@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 
 export const SqueezingPage = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
   const [loadingCount, setLoadingCount] = useState(1);
   const [tabsData, setTabsData] = useState({
     tabs: [],
@@ -28,12 +29,16 @@ export const SqueezingPage = () => {
           if (response) resolve(response);
         });
       }).then((res) => {
-        setTabsData(res);
+        if (res.success) setTabsData(res.data);
+        else setIsError(true);
       });
     };
     getTabsData();
   }, []);
-
+  
+  if (isError) {
+    return <div>ERROR</div>;
+  }
   return (
     <Container>
       <Header>
@@ -48,7 +53,6 @@ export const SqueezingPage = () => {
         setIsLoading={setIsLoading}
         isLoading={isLoading}
       />
-   
     </Container>
   );
 };
