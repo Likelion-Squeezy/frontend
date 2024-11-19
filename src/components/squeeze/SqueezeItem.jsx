@@ -16,6 +16,7 @@ export const SqueezeItem = ({
   image = "",
   setIsLoading,
   isLoading = true,
+  setIsError,
 }) => {
   const navigate = useNavigate();
   const [squeezes, setSqueezes] = useState([]);
@@ -32,14 +33,14 @@ export const SqueezeItem = ({
           },
           (response) => {
             if (response) resolve(response);
+            else reject("error");
           }
         );
       }).then((res) => {
         if (res.success) {
           setSqueezes(res.data.squeeze);
           setIsLoading(false);
-        }
-
+        } else setIsError(true);
         //
       });
     };

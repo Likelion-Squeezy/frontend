@@ -35,7 +35,7 @@ export const SqueezingPage = () => {
     };
     getTabsData();
   }, []);
-  
+
   if (isError) {
     return <div>ERROR</div>;
   }
@@ -52,6 +52,7 @@ export const SqueezingPage = () => {
         image={tabsData.capturedImage}
         setIsLoading={setIsLoading}
         isLoading={isLoading}
+        setIsError={setIsError}
       />
     </Container>
   );
