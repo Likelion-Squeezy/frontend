@@ -5,6 +5,9 @@ import { useState } from "react";
 export const UserSqueezyPage = () => {
   const [isError, setIsError] = useState(false);
 
+  if (isError) {
+    return <div>ERROR</div>;
+  }
   return (
     <Container>
       <Header>Your Squeezy</Header>
