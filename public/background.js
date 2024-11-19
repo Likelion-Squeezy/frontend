@@ -188,10 +188,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     (async function () {
       try {
         await previewTab((previews) => {
-          sendResponse(previews);
+          sendResponse({ success: true, data: previews });
         });
       } catch (error) {
-        sendResponse({});
+        sendResponse({ success: false, data: error.message });
       }
     })();
     return true;
@@ -211,51 +211,53 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       sendResponse({ success: false, error: error.message });
     }
   } else if (request.action === "eezy") {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (tabs.length > 0) {
-        chrome.scripting.executeScript(
-          {
-            target: { tabId: tabs[0].id },
-            func: extractHtml,
-          },
-          (results) => {
-            if (results && results[0]) {
-              const extractedContent = results[0].result;
+    (async function () {
+      await chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs.length > 0) {
+          chrome.scripting.executeScript(
+            {
+              target: { tabId: tabs[0].id },
+              func: extractHtml,
+            },
+            (results) => {
+              if (results && results[0]) {
+                const extractedContent = results[0].result;
 
-              // Send the extracted content to the API
-              fetch("http://13.124.143.64/api/eezy/", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization:
-                    "Token 57fdf5d9b6c6c2e959f6dee73e0db162d1bc065c",
-                },
-                body: JSON.stringify({
-                  title: tabs[0].title,
-                  url: tabs[0].url,
-                  script: extractedContent,
-                }),
-              })
-                .then((response) => response.json())
-                .then((data) => {
-                  sendResponse({ response: data });
+                // Send the extracted content to the API
+                fetch("http://13.124.143.64/api/eezy/", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization:
+                      "Token 57fdf5d9b6c6c2e959f6dee73e0db162d1bc065c",
+                  },
+                  body: JSON.stringify({
+                    title: tabs[0].title,
+                    url: tabs[0].url,
+                    script: extractedContent,
+                  }),
                 })
-                .catch((error) => {
-                  console.error("Error sending data to API:", error);
-                  sendResponse({ response: "error" });
-                });
-            } else {
-              console.log("No results from script execution.");
-              sendResponse({ response: "no results" });
+                  .then((response) => response.json())
+                  .then((data) => {
+                    sendResponse({ success: true, data: data });
+                  })
+                  .catch((error) => {
+                    console.error("Error sending data to API:", error);
+                    sendResponse({ success: false, data: "error" });
+                  });
+              } else {
+                console.log("No results from script execution.");
+                sendResponse({ success: false, data: "no results" });
+              }
             }
-          }
-        );
-      } else {
-        console.log("활성화된 탭을 찾을 수 없습니다.");
-        sendResponse({ response: "no active tab" });
-      }
-    });
-    return true; // 비동기 응답을 허용
+          );
+        } else {
+          console.log("활성화된 탭을 찾을 수 없습니다.");
+          sendResponse({ response: "no active tab" });
+        }
+      });
+    })();
+    return true;
   }
   return true;
 });

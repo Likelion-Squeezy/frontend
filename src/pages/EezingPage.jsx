@@ -8,6 +8,7 @@ import Folder from "@assets/icon/icon-folder.svg?react";
 import { EezyItem } from "@components/eezy/EezyItem";
 
 export const EezingPage = () => {
+  const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [loadingCount, setLoadingCount] = useState(1);
   const [data, setData] = useState({});
@@ -25,7 +26,7 @@ export const EezingPage = () => {
   useEffect(() => {
     const fetchEezy = async () => {
       try {
-        const { response } = await new Promise((resolve, reject) => {
+        await new Promise((resolve, reject) => {
           chrome.runtime.sendMessage({ action: "eezy" }, (response) => {
             if (chrome.runtime.lastError) {
               reject(chrome.runtime.lastError);
@@ -33,14 +34,28 @@ export const EezingPage = () => {
               resolve(response);
             }
           });
+        }).then((response) => {
+          if (response.success) {
+            console.log("data", response.data);
+            setData(response.data);
+          } else setIsError(true);
         });
-        setData(response); // 성공 시 typing animation 실행
+        // 성공 시 typing animation 실행
       } catch (error) {
         console.error("Error sending message:", error);
+        setIsError(true);
       }
     };
     fetchEezy();
   }, []);
+
+  if(isError){
+    return (
+      <div>
+        ERROR
+      </div>
+    );
+  }
 
   return (
     <Container>
