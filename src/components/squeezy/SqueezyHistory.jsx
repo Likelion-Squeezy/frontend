@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { SqueezyList } from "./SqueezyList";
 import { useEffect, useState } from "react";
 
-export const SqueezyHistroy = () => {
+export const SqueezyHistroy = ({ setIsError }) => {
   const [history, setHistory] = useState([]);
 
   useEffect(() =>
@@ -20,6 +20,8 @@ export const SqueezyHistroy = () => {
           if (response.success) {
             console.log(response.data.history);
             setHistory(response.data.history);
+          } else {
+            setIsError(true);
           }
         });
       };

@@ -1,11 +1,14 @@
 import styled from "styled-components";
 import { SqueezyHistroy } from "@components/squeezy/SqueezyHistory";
+import { useState } from "react";
 
 export const UserSqueezyPage = () => {
+  const [isError, setIsError] = useState(false);
+
   return (
     <Container>
       <Header>Your Squeezy</Header>
-      <SqueezyHistroy />
+      <SqueezyHistroy setIsError={setIsError} />
     </Container>
   );
 };
